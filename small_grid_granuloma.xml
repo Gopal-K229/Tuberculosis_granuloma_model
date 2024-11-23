@@ -1,0 +1,175 @@
+<CompuCell3D Revision="2" Version="4.5.0">
+
+<Metadata> 
+	<NumberOfProcessors>4</NumberOfProcessors>
+	<DebugOutputFrequency>10</DebugOutputFrequency>
+</Metadata>
+
+<Potts>
+	<Dimensions x="100" y="30" z="1"/>
+	<Steps>20001</Steps>
+	<Temperature>10.0</Temperature>
+	<NeighborOrder>2</NeighborOrder>
+</Potts>
+
+
+
+<Plugin Name="CellType">
+      <CellType TypeId="0" TypeName="Medium"/>
+      <CellType TypeId="1" TypeName="mtb"/>
+      <CellType TypeId="2" TypeName="macro"/>
+      <CellType TypeId="3" TypeName="inf_mac"/>
+      <CellType TypeId="4" TypeName="Tcell"/>
+      <CellType TypeId="5" TypeName="m2"/>
+</Plugin>
+
+<Plugin Name="Volume">
+      <VolumeEnergyParameters CellType="mtb" LambdaVolume="50.0" TargetVolume="2"/>
+      <VolumeEnergyParameters CellType="macro" LambdaVolume="15.0" TargetVolume="20"/>
+      <VolumeEnergyParameters CellType="inf_mac" LambdaVolume="15.0" TargetVolume="20"/>
+      <VolumeEnergyParameters CellType="m2" LambdaVolume="15.0" TargetVolume="20"/>
+      <VolumeEnergyParameters CellType="Tcell" LambdaVolume="15.0" TargetVolume="10"/>
+</Plugin>
+
+<!-- <Plugin Name="Surface"> -->
+       <!-- <SurfaceEnergyParameters CellType="mtb" LambdaSurface="50.0" TargetSurface="5"/> -->
+       <!-- <SurfaceEnergyParameters id="surfacelambda1" CellType="macro" LambdaSurface="10.0" TargetSurface="20"/> -->
+       <!-- <SurfaceEnergyParameters id="surfacelambda2" CellType="inf_mac" LambdaSurface="10.0" TargetSurface="20"/> -->
+       <!-- <SurfaceEnergyParameters id="surfacelambda3" CellType="m2" LambdaSurface="10.0" TargetSurface="20"/> -->
+       <!-- <SurfaceEnergyParameters CellType="Tcell" LambdaSurface="10.0" TargetSurface="12"/> -->
+<!-- </Plugin> -->
+
+<Plugin Name="Surface"></Plugin>
+
+
+<Plugin Name="CenterOfMass">	
+</Plugin>
+
+<Plugin Name="NeighborTracker">
+</Plugin>
+
+<Plugin Name="PixelTracker">
+</Plugin>
+<Plugin Name="Contact">
+	   <Energy Type1="Medium" Type2="Medium">10.0</Energy>
+	   <Energy Type1="Medium" Type2="mtb">10.0</Energy>
+	   <Energy Type1="Medium" Type2="macro">20.0</Energy>
+	   <Energy Type1="Medium" Type2="inf_mac">20.0</Energy>
+	   <Energy Type1="Medium" Type2="Tcell">20.0</Energy>
+	   <Energy Type1="Medium" Type2="m2">20.0</Energy>
+	   
+	   <Energy Type1="mtb" Type2="mtb">20.0</Energy>
+	   <Energy Type1="mtb" Type2="macro">10.0</Energy>
+	   <Energy Type1="mtb" Type2="inf_mac">10.0</Energy>
+	   <Energy Type1="mtb" Type2="Tcell">10.0</Energy>
+	   <Energy Type1="mtb" Type2="m2">10.0</Energy>
+	   
+	   <Energy Type1="macro" Type2="macro">50.0</Energy>
+	   <Energy Type1="macro" Type2="inf_mac">50.0</Energy>
+	   <Energy Type1="macro" Type2="Tcell">60.0</Energy>
+	   <Energy Type1="macro" Type2="m2">50.0</Energy>
+	   
+	   <Energy Type1="inf_mac" Type2="inf_mac">50.0</Energy>
+	   <Energy Type1="inf_mac" Type2="Tcell">20.0</Energy>
+	   <Energy Type1="inf_mac" Type2="m2">50.0</Energy>
+	   
+	   <Energy Type1="Tcell" Type2="Tcell">50.0</Energy>
+	   <Energy Type1="Tcell" Type2="m2">20.0</Energy>
+	   
+	   <Energy Type1="m2" Type2="m2">50.0</Energy>
+	   <NeighborOrder>1</NeighborOrder>
+</Plugin>
+
+
+<Plugin Name="Chemotaxis">
+	<ChemicalField Name="attr">
+	<!-- <ChemotaxisByType ChemotactTowards="Medium" Lambda="200" Type="macro"/> -->
+	<ChemotaxisByType ChemotactTowards="Medium" Lambda="10000" LogScaledCoef="1" Type="macro" />
+	<ChemotaxisByType ChemotactTowards="Medium" Lambda="10000" LogScaledCoef="1" Type="Tcell" />
+	</ChemicalField>
+</Plugin>
+
+<Plugin Name="Secretion">
+	<Field Name="attr">
+		<Secretion Type="mtb">5.0</Secretion>
+		<Secretion Type="inf_mac">0.005</Secretion>
+		<Secretion Type="m2">0.005</Secretion>
+	</Field>
+</Plugin>
+
+<Steppable Type="DiffusionSolverFE" Frequency="10">
+	<DiffusionField Name="attr">
+		<DiffusionData>
+			<FieldName>attr</FieldName>
+			    <GlobalDiffusionConstant>30.0</GlobalDiffusionConstant>
+			    <GlobalDecayConstant>0.001</GlobalDecayConstant>
+			    
+			    <DiffusionCoefficient CellType="mtb">30.0</DiffusionCoefficient>
+			    <DiffusionCoefficient CellType="macro">30.0</DiffusionCoefficient>
+			    <DiffusionCoefficient CellType="inf_mac">30.0</DiffusionCoefficient>
+			    <DiffusionCoefficient CellType="m2">30.0</DiffusionCoefficient>
+			    
+			    <DecayCoefficient CellType="mtb">0.0</DecayCoefficient>
+			    <DecayCoefficient CellType="macro">0.0</DecayCoefficient>
+			    <DecayCoefficient CellType="inf_mac">0.0</DecayCoefficient>
+		</DiffusionData>
+		<BoundaryConditions>
+			<Plane Axis="X">
+			      <!-- <ConstantValue PlanePosition="Min" Value="100.0"/> -->
+				<ConstantValue PlanePosition="Max" Value="0.0"/>
+				<ConstantDerivative PlanePosition="Min" Value="0.0"/>
+			</Plane>
+			<Plane Axis="Y">
+			       <ConstantDerivative PlanePosition="Min" Value="0.0"/>
+				<ConstantDerivative PlanePosition="Max" Value="0.0"/>
+			</Plane>
+		</BoundaryConditions>
+	</DiffusionField>
+
+	<DiffusionField Name="oxy">
+		<DiffusionData>
+			<FieldName>oxy</FieldName>
+			    <GlobalDiffusionConstant>50</GlobalDiffusionConstant>
+			    <GlobalDecayConstant>0.0</GlobalDecayConstant>
+			    <InitialConcentrationExpression>10*5</InitialConcentrationExpression>
+			    
+			    <DiffusionCoefficient CellType="mtb">10</DiffusionCoefficient>
+			    <DiffusionCoefficient CellType="macro">10</DiffusionCoefficient>
+			    <DiffusionCoefficient CellType="inf_mac">10</DiffusionCoefficient>
+			    <DiffusionCoefficient CellType="m2">10</DiffusionCoefficient>
+			    
+			    <DecayCoefficient CellType="mtb">0.01</DecayCoefficient>
+			    <DecayCoefficient CellType="macro">0.01</DecayCoefficient> 
+			    <DecayCoefficient CellType="inf_mac">0.01</DecayCoefficient>
+			    <DecayCoefficient CellType="m2">0.01</DecayCoefficient>
+		</DiffusionData>
+		 <BoundaryConditions>
+			<Plane Axis="X">
+				<ConstantDerivative PlanePosition="Min" Value="0.0"/>
+				<!-- <ConstantValue PlanePosition="Min" Value="5.0"/>  -->
+				<ConstantValue PlanePosition="Max" Value="50.0"/>
+			</Plane>
+			<Plane Axis="Y">
+				<ConstantDerivative PlanePosition="Min" Value="0.0"/>
+				<ConstantDerivative PlanePosition="Max" Value="0.0"/>
+			</Plane>
+		 </BoundaryConditions>
+	</DiffusionField>
+</Steppable>
+
+
+
+<Steppable Type="UniformInitializer">
+	<Region>
+		<BoxMin x="3" y="2" z="0"/>
+		<BoxMax x="6" y="28" z="1"/>
+		 <Gap>0</Gap>
+		 <Width>2</Width>
+		 <Types>mtb</Types>
+	</Region>
+</Steppable>
+</CompuCell3D>
+
+
+
+ 
